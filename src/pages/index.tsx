@@ -26,7 +26,11 @@ type FormattedData = {
 export default function Home(): JSX.Element {
 
   const fetchImages = async ({ pageParam = 0 }) => {
-    const response = await api.get(`http://localhost:3000/api/images?after=${pageParam}`)
+    const response = await api.get('/api/images', {
+      params: {
+        after: pageParam
+      }
+    })
     const { data } = response
 
     return data
@@ -51,18 +55,14 @@ export default function Home(): JSX.Element {
   );
 
   const formattedData = useMemo(() => {
-    // TODO FORMAT AND FLAT DATA ARRAY
-    return data?.pages.map(page => {
-      return page.data.map(card => {
-        return [{
-          title: card.title,
-          description: card.description,
-          url: card.image,
-          ts: card.ts,
-          id: card.id
-        }]
+    if (data) {
+      return data.pages
+        .map(page => {
+        return page.data;
       })
-    }).flat(2)
+        .flat();
+    }
+    return [];
   }, [data]);
 
   // TODO RENDER LOADING SCREEN
